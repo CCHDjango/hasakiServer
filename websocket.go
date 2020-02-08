@@ -8,7 +8,6 @@ import "log"
 
 import "github.com/gorilla/websocket"
 
-
 var upgrader = websocket.Upgrader{}
 type Client struct{
 	hub *Hub
