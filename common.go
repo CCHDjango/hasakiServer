@@ -81,8 +81,10 @@ func nowTime(m string)(string){
 	now:=time.Now().Format("2006-01-02 15:04:05")
 	if m=="day"{
 		return string([]byte(now[:10]))              // 返回的示例：2019-12-30
+	}else{
+		now:=time.Now().Unix()
+		return string(now)
 	}
-	return "x"
 }
 
 func strJoin(first string,last string,mid string)(string){
