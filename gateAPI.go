@@ -4,6 +4,7 @@
 每次发单前，请求一次行情，然后根据最新的行情发出订单
 
 最后一次修改时间 : 2020-1-15
+
 */
 package main
 
@@ -20,18 +21,18 @@ import (
 	"fmt"
 )
 
-var KEY  = "gate.io api key"; // gate.io api key
-var SECRET = "gate.io api secret";  // gate.io api secret
+var gateKEY  = "gate.io api key"; // gate.io api key
+var gateSECRET = "gate.io api secret";  // gate.io api secret
 
 func gateMain() {
 	// Method call
 	// all pairs
-	var ret string = sell("EOS_USDT","3.7800","1")
+	var ret string = gateSell("EOS_USDT","3.7800","1")
 	fmt.Println(ret)
 }
 
 // all support pairs
-func getPairs() string {
+func gateGetPairs() string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/pairs"
 	var param string = ""
@@ -40,7 +41,7 @@ func getPairs() string {
 }
 
 // Market Info
-func marketinfo() string {
+func gateMarketinfo() string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/marketinfo"
 	var param string = ""
@@ -50,7 +51,7 @@ func marketinfo() string {
 
 
 // Market Details
-func marketlist() string {
+func gateMarketlist() string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/marketlist"
 	var param string = ""
@@ -59,7 +60,7 @@ func marketlist() string {
 }
 
 // tickers
-func tickers() string {
+func gateTickers() string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/tickers"
 	var param string = ""
@@ -68,7 +69,7 @@ func tickers() string {
 }
 
 // ticker
-func ticker(ticker string) string {
+func gateTicker(ticker string) string {
 	// function : 返回tick数据
 	// param ticker : 示例eos_usdt
 	var method string = "GET"
@@ -79,7 +80,7 @@ func ticker(ticker string) string {
 }
 
 // Depth
-func orderBooks() string {
+func gateOrderBooks() string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/orderBooks"
 	var param string = ""
@@ -88,7 +89,7 @@ func orderBooks() string {
 }
 
 // Depth of pair
-func orderBook(params string) string {
+func gateOrderBook(params string) string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/orderBook/" + params
 	var param string = ""
@@ -97,7 +98,7 @@ func orderBook(params string) string {
 }
 
 // Trade History
-func tradeHistory(params string) string {
+func gateTradeHistory(params string) string {
 	var method string = "GET"
 	var url string = "http://data.gateio.life/api2/1/tradeHistory/" + params
 	var param string = ""
@@ -106,7 +107,7 @@ func tradeHistory(params string) string {
 }
 
 // Get account fund balances
-func balances() string {
+func gateBalances() string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/balances"
 	var param string = ""
@@ -115,7 +116,7 @@ func balances() string {
 }
 
 // get deposit address
-func depositAddress(currency string) string {
+func gateDepositAddress(currency string) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/depositAddress"
 	var param string = "currency=" + currency
@@ -124,7 +125,7 @@ func depositAddress(currency string) string {
 }
 
 // get deposit withdrawal history
-func depositsWithdrawals(start string, end string) string {
+func gateDepositsWithdrawals(start string, end string) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/depositsWithdrawals"
 	var param string = "start=" + start + "&end=" + end
@@ -133,7 +134,7 @@ func depositsWithdrawals(start string, end string) string {
 }
 
 // Place order buy
-func buy(currencyPair string, rate string, amount string) string {
+func gateBuy(currencyPair string, rate string, amount string) string {
 	// function : 下单函数
 	// param currencyPair : 交易品种  EOS_USDT
 	// param rate : 交易价格
@@ -146,7 +147,7 @@ func buy(currencyPair string, rate string, amount string) string {
 }
 
 // Place order sell
-func sell(currencyPair string, rate string, amount string) string {
+func gateSell(currencyPair string, rate string, amount string) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/sell"
 	var param string = "currencyPair=" + currencyPair + "&rate=" + rate + "&amount=" + amount
@@ -155,7 +156,7 @@ func sell(currencyPair string, rate string, amount string) string {
 }
 
 // Cancel order
-func cancelOrder(orderNumber string, currencyPair string ) string {
+func gateCancelOrder(orderNumber string, currencyPair string ) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/cancelOrder"
 	var param string = "orderNumber=" + orderNumber + "&currencyPair=" + currencyPair
@@ -164,7 +165,7 @@ func cancelOrder(orderNumber string, currencyPair string ) string {
 }
 
 // Cancel all orders
-func cancelAllOrders( types string, currencyPair string ) string {
+func gateCancelAllOrders( types string, currencyPair string ) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/cancelAllOrders"
 	var param string = "type=" + types + "&currencyPair=" + currencyPair
@@ -173,7 +174,7 @@ func cancelAllOrders( types string, currencyPair string ) string {
 }
 
 // Get order status
-func getOrder( orderNumber string, currencyPair string ) string {
+func gateGetOrder( orderNumber string, currencyPair string ) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/getOrder"
 	var param string = "orderNumber=" + orderNumber + "&currencyPair=" + currencyPair
@@ -182,7 +183,7 @@ func getOrder( orderNumber string, currencyPair string ) string {
 }
 
 // Get my open order list
-func openOrders() string {
+func gateOpenOrders() string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/openOrders"
 	var param string = ""
@@ -191,7 +192,7 @@ func openOrders() string {
 }
 
 // 获取我的24小时内成交记录
-func myTradeHistory( currencyPair string, orderNumber string) string {
+func gateMyTradeHistory( currencyPair string, orderNumber string) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/tradeHistory"
 	var param string = "orderNumber=" + orderNumber + "&currencyPair=" + currencyPair
@@ -200,7 +201,7 @@ func myTradeHistory( currencyPair string, orderNumber string) string {
 }
 
 // Get my last 24h trades
-func withdraw( currency string, amount string, address string) string {
+func gateWithdraw( currency string, amount string, address string) string {
 	var method string = "POST"
 	var url string = "https://api.gateio.life/api2/1/private/withdraw"
 	var param string = "currency=" + currency + "&amount=" + amount + "&address=" + address
@@ -209,7 +210,7 @@ func withdraw( currency string, amount string, address string) string {
 }
 
 func getSign( params string) string {
-    key := []byte(SECRET)
+    key := []byte(gateSECRET)
     mac := hmac.New(sha512.New, key)
     mac.Write([]byte(params))
     return fmt.Sprintf("%x", mac.Sum(nil))
@@ -228,7 +229,7 @@ func httpDo(method string,url string, param string) string {
     var sign string = getSign(param)
 
     req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-    req.Header.Set("key", KEY)
+    req.Header.Set("key", gateKEY)
     req.Header.Set("sign", sign)
 
     resp, err := client.Do(req)
