@@ -1,3 +1,27 @@
 {
-    "saveLocal":false
+    "saveLocal":false,
+    "exchange":{
+        "gateio":true,
+        "huobi":false
+    },
+    "key":{
+        "gateAPI":"",
+        "gateSecret":"",
+        "huobiAPI":"",
+        "huobiSecret":""
+    },
+    "crawl":{
+        "govNews":true,
+        "xinlangEconomy":false,
+        "twitter":false,
+        "facebook":false
+    },
+    "message":{
+        "dingding":false,
+        "dingAddress":"",
+        "email":false,
+        "emailAddress":"",
+        "phoneMsg":false,
+        "phoneNumber":""
+    }
 }

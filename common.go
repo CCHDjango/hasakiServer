@@ -9,6 +9,20 @@ import "encoding/json"
 import "io/ioutil"
 import "math"
 
+func print(content interface{}){
+	// function : 简化打印
+	fmt.Println(content)
+}
+
+func printError(content string){
+	// function : 错误提示
+	panic(content)
+}
+
+func printLocal(content string){
+	// function : 写入日志到本地txt文件
+}
+
 func dateJudge(firstDate string,lastDate string)(bool){
 	/*
 	function : 判断前后时间是否一致，如果一致则返回真，否则假
