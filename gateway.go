@@ -27,6 +27,14 @@ func (g *Gateway) setting(market string,symbol string,frequency string,apiKey st
 	// params frequency : K line `s frequency like 1min,1hour,1day
 	// params apiKey : user `s api key it create in exchange
 	// params secret : user `s secret key
+	switch market {
+	case "gateio":
+		break
+	case "huobi":
+		break
+	default:
+		print("gateway setting switch default")
+	}
 
 }
 
@@ -36,6 +44,8 @@ func (g *Gateway) sendOrder(market string,symbol string,price string,volume stri
 	case "gateio":
 		break
 	case "huobi":
-		break	
+		break
+	default:
+		print("gateway send order switch default")
 	}
 }
