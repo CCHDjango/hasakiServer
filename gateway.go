@@ -18,6 +18,8 @@ type Gateway struct{
 type gatewayInterface interface{
 	setting(market string,symbol string,frequency string,apiKey string,secret string)
 	sendOrder(market string,symbol string,price string,volume string)
+	subscribeQuote(market string,symbol string,frequency string)
+	gateRestfulQuote(symbol string)
 }
 
 // 设置订阅数据
@@ -48,4 +50,43 @@ func (g *Gateway) sendOrder(market string,symbol string,price string,volume stri
 	default:
 		print("gateway send order switch default")
 	}
+}
+
+/*--------------------------控制交易所接口--------------------------*/
+func (g *Gateway) subscribeQuote(market string,symbol string,frequency string){
+	// function : 根据市场和品种和周期订阅行情,通过goroutine启动然后通过channel把数据传出去
+	// param market : example - gateio
+	// param symbol : example - btc_usdt
+	// param frequency : example - 1min
+	switch market {
+	case "gateio":
+		g.gateRestfulQuote(symbol)
+		break
+	case "huobi":
+		break
+	}
+}
+
+// gateio 交易所的接口
+func (g *Gateway) gateRestfulQuote(symbol string){
+	// function : 通过gateio restful接口查询行情，这里拿到的是tick的行情
+	// param symbol : 订阅的品种 example - btc_usdt
+	result:=gateTicker(symbol)
+	print(result)
+}
+
+func (g *Gateway) gateSendOrder(direction string,symbol string,price string,volume string){
+	// function : 发单到gateio交易所
+	// param symbol : 下单品种 example - BTC_USDT 统一大写
+	// param price : 下单价格
+	// param volume : 下单数量
+	// param direction : 下单方向 buy or sell
+
+	// 下单前需要先给api赋值
+	if direction=="buy"{
+		gateBuy(symbol,price,volume)
+	}else{
+		gateSell(symbol,price,volume)
+	}
+
 }
