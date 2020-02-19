@@ -49,7 +49,6 @@ func gateMarketinfo() string {
 	return ret
 }
 
-
 // Market Details
 func gateMarketlist() string {
 	var method string = "GET"

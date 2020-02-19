@@ -13,6 +13,11 @@ last Code At : 2020-2-13
 */
 package main
 
+import "sync"
+
+// globals
+var go_sync sync.WaitGroup   // 全局线程协程管理
+
 func main(){
 	websocketMain()
 }
