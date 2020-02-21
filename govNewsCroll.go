@@ -2,7 +2,7 @@
 爬取中华人民共和国人民网，新闻滚动
 开发人：陈常鸿
 创建时间：2019-12-17
-最后一次修改时间：2020-2-15
+最后一次修改时间：2020-2-21
 
 功能：
 网址示例：http://sousuo.gov.cn/column/30611/251.htm
@@ -24,8 +24,8 @@ import "sync"
 import "github.com/PuerkitoBio/goquery"
 
 var govNewsCrollAddress string = "http://sousuo.gov.cn/column/30611/"
-var govNewsCrollLastDate string = "0"                                     // 最后一篇文章的时间，如果没有则从数据库读取
-var govNewsCrollAllPages int = 5705
+var govNewsCrollLastDate string = "0"            // 最后一篇文章的时间，如果没有则从数据库读取
+var govNewsCrollAllPages int = 5705             // TODO : 注意这个值是每天都变化的
 
 func govNewsCrollHTMLString(address string) (*http.Response,error){
 	// function : 获取html的代码
