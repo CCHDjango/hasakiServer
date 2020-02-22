@@ -7,14 +7,54 @@ import "strconv"
 import "fmt"
 import "encoding/json"
 import "io/ioutil"
+import "io"
 import "math"
+import "log"
+import "os"
+
+/*-----------------------------定制日志----------------------------*/
+func logging(module string,content string,logFile string){
+	// function : 记录普通级别的信息
+	// param module : trace/info/warning/error
+	// param logFile : 需要写入到文件的路径
+	switch module{
+	case "trace":
+		trace:=log.New(ioutil.Discard,"trace :",log.Ldate|log.Ltime|log.Lshortfile)
+		trace.Println(content)
+		break
+	case "info":
+		info:=log.New(os.Stdout,"info :",log.Ldate|log.Ltime|log.Lshortfile)
+		info.Println(content)
+		break
+	case "warning":
+		warning:=log.New(os.Stdout,"warning :",log.Ldate|log.Ltime|log.Lshortfile)
+		warning.Println(content)
+		break
+	case "error":
+		// 如果用户传过来的地址是个空值的情况就直接打印内容即可
+		if len(logFile)<2{
+			print(content)
+			return
+		}
+		file,err:=os.OpenFile(logFile,os.O_CREATE|os.O_WRONLY|os.O_APPEND,0666)
+		if err!=nil{
+			log.Fatalln("common.go logging function failed to open error log file:",err)
+		}
+		err2:=log.New(io.MultiWriter(file,os.Stderr),"error :",log.Ldate|log.Ltime|log.Lshortfile)
+		err2.Println(content)
+		break
+	default:
+		return
+	}
+}
+//-----------------------------------------------------------------------
 
 func print(content interface{}){
 	// function : 简化打印
 	fmt.Println(content)
 }
 
-func printError(content string){
+func printError(content error){
 	// function : 错误提示
 	panic(content)
 }

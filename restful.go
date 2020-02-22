@@ -11,7 +11,7 @@ package main
 import "github.com/gin-gonic/gin"
 
 func newsServer(context *gin.Context){
-	// function : 返回新闻舆情的服务
+	// function : 返回数据库全部新闻舆情
 	context.JSON(200,gin.H{
 		"code":200,
 		"success":true,
@@ -20,7 +20,7 @@ func newsServer(context *gin.Context){
 }
 
 func quoteServer(context *gin.Context){
-	// function : 返回历史历史行情的服务
+	// function : 返回数据库全部的历史历史行情
 }
 
 func startRestful(){
