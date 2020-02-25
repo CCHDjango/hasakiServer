@@ -11,6 +11,18 @@ import "io"
 import "math"
 import "log"
 import "os"
+import "path/filepath"
+
+/*-----------------------------路径相关----------------------------*/
+func exePath()string{
+	// function : 返回golang二进制文件的启动位置
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err!=nil{
+		printError(err)
+		return ""
+	}
+	return dir
+}
 
 /*-----------------------------定制日志----------------------------*/
 func logging(module string,content string,logFile string){

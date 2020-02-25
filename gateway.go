@@ -31,6 +31,8 @@ func (g *Gateway) setting(market string,symbol string,frequency string,apiKey st
 	// params secret : user `s secret key
 	switch market {
 	case "gateio":
+		gateKEY=apiKey
+		gateSECRET=secret
 		break
 	case "huobi":
 		break
@@ -38,12 +40,19 @@ func (g *Gateway) setting(market string,symbol string,frequency string,apiKey st
 		print("gateway setting switch default")
 	}
 
+	// 订阅行情
+	go_sync.Add(1)
+	go g.subscribeQuote(market,symbol,frequency)
+	go_sync.Wait()
 }
 
 // 接收外部的数据并下单下单
-func (g *Gateway) sendOrder(market string,symbol string,price string,volume string){
+func (g *Gateway) sendOrder(direction string,market string,symbol string,price string,volume string){
 	switch market {
 	case "gateio":
+		go_sync.Add(1)
+		go g.gateSendOrder(direction,symbol,price,volume)
+		go_sync.Wait()
 		break
 	case "huobi":
 		break
@@ -58,6 +67,7 @@ func (g *Gateway) subscribeQuote(market string,symbol string,frequency string){
 	// param market : example - gateio
 	// param symbol : example - btc_usdt
 	// param frequency : example - 1min
+	defer go_sync.Done()
 	switch market {
 	case "gateio":
 		g.gateRestfulQuote(symbol)
@@ -70,9 +80,14 @@ func (g *Gateway) subscribeQuote(market string,symbol string,frequency string){
 // gateio 交易所的接口
 func (g *Gateway) gateRestfulQuote(symbol string){
 	// function : 通过gateio restful接口查询行情，这里拿到的是tick的行情
+	// 默认是10秒查询一次行情，拿到行情后，把行情传到dataManager
 	// param symbol : 订阅的品种 example - btc_usdt
-	result:=gateTicker(symbol)
-	print(result)
+	for {
+		result:=gateTicker(symbol)
+		print(result)
+		sleep(10)
+	}
+
 }
 
 func (g *Gateway) gateSendOrder(direction string,symbol string,price string,volume string){
@@ -83,6 +98,7 @@ func (g *Gateway) gateSendOrder(direction string,symbol string,price string,volu
 	// param direction : 下单方向 buy or sell
 
 	// 下单前需要先给api赋值
+	defer go_sync.Done()
 	if direction=="buy"{
 		gateBuy(symbol,price,volume)
 	}else{
