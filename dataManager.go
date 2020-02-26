@@ -2,6 +2,19 @@
 hasaki-quant server center data manager code
 所有数据操作全部在dataManager中进行统一调度
 包括行情数据和爬虫数据，websocket获取数据并返回到外部
+
+行请处理:
+从gateway对象获取行请，行请通过websocket发送到用户策略中，行请保存到数据库中,最新一条行请保存在内存中
+方便以后给用户发送价格警告
+
+舆情处理:
+从crawlCenter中获取的舆情新闻，hasaki-quant数据中台还没有能力做NLP处理，所以
+新闻舆情会直接保存到数据库，用户可以指定某些字符串，新闻中有相关字符串则给用户地址
+发送新闻
+
+订单处理:
+gateway订单信息触发后，传递订单信息到dataManager，由dataManager传给策略，
+订单详情保存到数据库
 */
 package main
 
@@ -11,7 +24,33 @@ import "gopkg.in/mgo.v2/bson"
 import "database/sql"
 import _ "github.com/go-sql-driver/mysql"
 
-func dataMain(mgoPath string,mySqlPath string){
+type DataManager struct{
+	Gateway Gateway
+}
+type dataManagerInterface interface{
+	dataMain(mgoPath string,mySqlPath string)
+	saveAsMongoDB(session *mgo.Session ,datasetName string,tableName string,content map[string]interface{})
+	findAllInMgo(session *mgo.Session,datasetName string,tableName string) bool
+	deleteInMgo(session *mgo.Session,datasetName string,tableName string,identity string) error
+	findAllInSql(sqlDB *sql.DB,order string)
+}
+
+func (d *DataManager) setting(gateway *Gateway){
+	// function : 设置数据控制中心
+	// param gateway : hasaki - quant 网关对象
+	d.Gateway=*gateway
+}
+
+/*------------------------------获取行请数据--------------------------------*/
+func (d *DataManager) recvQuote()map[string]interface{}{
+	// function : 获取到行请并做分发，注意阻塞
+	// return : 行请数据
+	var quote map[string]interface{}
+	quote = <- d.Gateway.QuoteChan
+	return quote
+}
+
+func (d *DataManager) dataMain(mgoPath string,mySqlPath string){
 	// function : 数据调度模块的启动接口
 	// param mySqlPath : mysql路径 示例 : root:userName@tcp(address:port)/datasetName?charset=utf8
 	session,err:=mgo.Dial(mgoPath)
@@ -24,15 +63,15 @@ func dataMain(mgoPath string,mySqlPath string){
 		printError(err)
 	}
 	// TODO : 这是个sql的示例
-	findAllInSql(mysql,"")
+	d.findAllInSql(mysql,"")
 
 	// TODO : 这是一个示例,之后换成业务代码
 	content:=map[string]interface{}{"title":"","content":"","date":"","id":"","from":""}
-	saveAsMongoDB(session,"crawl","govNews",content)
+	d.saveAsMongoDB(session,"crawl","govNews",content)
 }
 
 /*--------------------------mongo数据库操作-----------------------------------*/
-func saveAsMongoDB(session *mgo.Session ,datasetName string,tableName string,content map[string]interface{}){
+func (d *DataManager) saveAsMongoDB(session *mgo.Session ,datasetName string,tableName string,content map[string]interface{}){
 	// function : 保存新闻舆情数据到mongo数据库
 	// 读表
 	// param session : mgo数据库的操作对象
@@ -44,7 +83,7 @@ func saveAsMongoDB(session *mgo.Session ,datasetName string,tableName string,con
 	print("insert data in mgo") // 这个打印不是必要的,如果打印次数过多，这个会导致日志臃肿
 }
 
-func findAllInMgo(session *mgo.Session,datasetName string,tableName string)(bool){
+func (d *DataManager) findAllInMgo(session *mgo.Session,datasetName string,tableName string)(bool){
 	// function : 根据标识来查询符合条件的所有数据
 
 	// TODO : 这个需要从外部传进来
@@ -64,7 +103,7 @@ func findAllInMgo(session *mgo.Session,datasetName string,tableName string)(bool
 	return true
 }
 
-func deleteInMgo(session *mgo.Session,datasetName string,tableName string,identity string)(error){
+func (d *DataManager) deleteInMgo(session *mgo.Session,datasetName string,tableName string,identity string)(error){
 	// function : 根据表示来删除内容
 
 	// TODO : 这个需要从外部传进来
@@ -91,6 +130,8 @@ func deleteInMgo(session *mgo.Session,datasetName string,tableName string,identi
 }
 
 /*-------------------------------mysql数据库操作------------------------------*/
-func findAllInSql(sqlDB *sql.DB,order string){
+func (d *DataManager) findAllInSql(sqlDB *sql.DB,order string){
 	// function : 查询mysql数据库
 }
+
+/*------------------------------操作本地数据-------------------------------*/

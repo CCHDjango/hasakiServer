@@ -13,7 +13,7 @@ package main
 
 // globals var
 type Gateway struct{
-
+	QuoteChan chan map[string]interface{}
 }
 type gatewayInterface interface{
 	setting(market string,symbol string,frequency string,apiKey string,secret string)
@@ -22,7 +22,7 @@ type gatewayInterface interface{
 	gateRestfulQuote(symbol string)
 }
 
-// 设置订阅数据
+// 设置订阅数据1
 func (g *Gateway) setting(market string,symbol string,frequency string,apiKey string,secret string){
 	// params market : exchange name like gateio
 	// params symbol : exchange`s symbol like btc
@@ -83,11 +83,13 @@ func (g *Gateway) gateRestfulQuote(symbol string){
 	// 默认是10秒查询一次行情，拿到行情后，把行情传到dataManager
 	// param symbol : 订阅的品种 example - btc_usdt
 	for {
-		result:=gateTicker(symbol)
+		var tampQupteMap map[string]interface{}
+		result:=gateTicker(symbol)  // result string
+		tampQupteMap=jsonToMap(result)
 		print(result)
+		g.QuoteChan<-tampQupteMap
 		sleep(10)
 	}
-
 }
 
 func (g *Gateway) gateSendOrder(direction string,symbol string,price string,volume string){

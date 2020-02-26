@@ -12,10 +12,38 @@ import "math"
 import "log"
 import "os"
 import "path/filepath"
+import "net/http"
+import "bufio"
+
+func savePic(url string,savePath string){
+	// function : 保存图片到本地
+	// param savePath : 图片保存路径  xxx/xxx.jpg
+	// param url : 图片网上的地址
+    imgPath := savePath
+    imgUrl := url
+    
+    res, err := http.Get(imgUrl)
+    if err != nil {
+        fmt.Println("common function save picture error")
+        return
+    }
+    defer res.Body.Close()
+    // 获得get请求响应的reader对象
+    reader := bufio.NewReaderSize(res.Body, 64 * 1024)
+    
+    file, err := os.Create(imgPath)
+    if err != nil {
+        panic(err)
+    }
+    // 获得文件的writer对象
+    writer := bufio.NewWriter(file)
+    io.Copy(writer, reader)
+}
 
 /*-----------------------------路径相关----------------------------*/
 func exePath()string{
-	// function : 返回golang二进制文件的启动位置
+	// function : 返回golang二进制文件的启动位置,golang代码打包之后，这个就会
+	// 返回当前程序的路径，如果是通过go run 来运行则会返回一个临时启动的执行路径
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err!=nil{
 		printError(err)
@@ -72,7 +100,8 @@ func printError(content error){
 }
 
 func printLocal(content string){
-	// function : 写入日志到本地txt文件
+	// function : 写入日志到本地txt文件，日志文件的路径默认在执行文件的同一目录
+	
 }
 
 func dateJudge(firstDate string,lastDate string)(bool){
