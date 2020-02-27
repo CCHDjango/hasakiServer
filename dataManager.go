@@ -43,7 +43,7 @@ func (d *DataManager) setting(gateway *Gateway){
 
 /*------------------------------获取行请数据--------------------------------*/
 func (d *DataManager) recvQuote()map[string]interface{}{
-	// function : 获取到行请并做分发，注意阻塞
+	// function : 获取到行请并做分发，注意阻塞，行请分发到保存在数据库，并把行请传到websocket发送队列里
 	// return : 行请数据
 	var quote map[string]interface{}
 	quote = <- d.Gateway.QuoteChan

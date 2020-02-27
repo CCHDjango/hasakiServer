@@ -17,6 +17,15 @@
 4，数据服务除了一个websocket连接用于实时交易之外，还提供一个restful数据请求服务.
 hasaki server自身的从外界获取到的数据会保存在数据库中，用户可以通过外部请求下载过往的历史数据用于做数据分析或者策略数据预热
 
+架构设计:
+|   [ crawlManager ]   [ gateway ] ---------- logManager
+|        |                  |      
+|      [     dataManager       ]   ---------- logManager
+|            |          |
+|     [websocket ]  [ database ]   ---------- logManager
+|         |                |
+|      [        user           ]   ---------- config.json
+
 #### connect exchange
 
 服务中心连接交易所
