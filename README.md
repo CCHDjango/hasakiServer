@@ -19,12 +19,19 @@ hasaki server自身的从外界获取到的数据会保存在数据库中，用�
 
 架构设计:
 |   [ crawlManager ]   [ gateway ] ---------- logManager
+
 |        |                  |      
+
 |      [     dataManager       ]   ---------- logManager
+
 |            |          |
+
 |     [websocket ]  [ database ]   ---------- logManager
+
 |         |                |
+
 |      [        user           ]   ---------- config.json
+
 
 #### connect exchange
 
