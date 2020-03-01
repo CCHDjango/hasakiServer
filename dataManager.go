@@ -25,9 +25,16 @@ import "database/sql"
 import _ "github.com/go-sql-driver/mysql"
 
 type DataManager struct{
-	Gateway Gateway
+	Gateway Gateway    // TODO : golang不需要这种设计
+	GatewayQuoteChan chan map[string]interface{}
+	QuoteChan chan map[string]interface{}
+	NewsChan chan string
+	CrawlNewsChan chan string
+	Session *mgo.Session
+	Mysql *sql.DB
 }
 type dataManagerInterface interface{
+	setting(quoteChan ,gatewayQuoteChan chan map[string]interface{},newsChan ,crawlNewsChan chan string)
 	dataMain(mgoPath string,mySqlPath string)
 	saveAsMongoDB(session *mgo.Session ,datasetName string,tableName string,content map[string]interface{})
 	findAllInMgo(session *mgo.Session,datasetName string,tableName string) bool
@@ -35,7 +42,7 @@ type dataManagerInterface interface{
 	findAllInSql(sqlDB *sql.DB,order string)
 }
 
-func (d *DataManager) setting(gateway *Gateway){
+func (d *DataManager) oldSetting(gateway *Gateway){
 	// function : 设置数据控制中心
 	// param gateway : hasaki - quant 网关对象
 	d.Gateway=*gateway
@@ -47,8 +54,18 @@ func (d *DataManager) recvQuote()map[string]interface{}{
 	// return : 行请数据
 	var quote map[string]interface{}
 	quote = <- d.Gateway.QuoteChan
+
+	// 保存到数据库
+	go_sync.Add(1)
+	go d.saveAsMongoDB(d.Session,"","",quote)
+	go_sync.Wait()
+
+	// 传给websocket
+	d.QuoteChan <- quote
+
 	return quote
 }
+
 
 func (d *DataManager) dataMain(mgoPath string,mySqlPath string){
 	// function : 数据调度模块的启动接口
@@ -57,17 +74,32 @@ func (d *DataManager) dataMain(mgoPath string,mySqlPath string){
 	if err!=nil{
 		printError(err)
 	}
+	d.Session=session
 	//var sqlDB *sql.DB
 	mysql,err:=sql.Open("mysql",mySqlPath)
 	if err!=nil{
 		printError(err)
 	}
-	// TODO : 这是个sql的示例
+	d.Mysql=mysql
+	// TODO : 这是个sql的示例,第二个参数是sql命令字符串
 	d.findAllInSql(mysql,"")
 
 	// TODO : 这是一个示例,之后换成业务代码
 	content:=map[string]interface{}{"title":"","content":"","date":"","id":"","from":""}
 	d.saveAsMongoDB(session,"crawl","govNews",content)
+}
+
+/*--------------------------数据模块设置-----------------------------------*/
+func (d *DataManager) setting(quoteChan ,gatewayQuoteChan chan map[string]interface{},newsChan ,crawlNewsChan chan string){
+	// function : 数据模块的设置部分
+	// param quoteChan : 数据通道，这个是数据模块处理好行情数据之后，分发到websocket模块的
+	// param gatewayQuote : 数据管道，从gateway网关把外部数据传到数据处理模块
+	// param newsChan : 新闻舆情管道，数据模块处理后的新闻舆情分发到websocket模块
+	// param crawlNewsChan : 新闻舆情管道，从爬虫模块传新闻舆情数据到数据处理模块
+	d.QuoteChan=quoteChan
+	d.GatewayQuoteChan=gatewayQuoteChan
+	d.NewsChan=newsChan
+	d.CrawlNewsChan=crawlNewsChan
 }
 
 /*--------------------------mongo数据库操作-----------------------------------*/
@@ -78,6 +110,7 @@ func (d *DataManager) saveAsMongoDB(session *mgo.Session ,datasetName string,tab
 	// param datasetName : 选择mgo的数据库名字
 	// param tableName : 指定mgo数据库的表
 	// param conotent : 需要插入到数据库的内容 参考示例 : {"title":title,"content":content,"date":time,"id":id,"from":dataFrom}
+	defer go_sync.Done()
 	c:=session.DB(datasetName).C(tableName)
 	c.Insert(content)
 	print("insert data in mgo") // 这个打印不是必要的,如果打印次数过多，这个会导致日志臃肿
