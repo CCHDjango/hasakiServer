@@ -160,6 +160,10 @@ func sleep(n int){
 	/*
 	function : 睡眠函数
 	param n : 睡眠的秒数
+	秒:time.Second
+	分钟:time.Minute
+	小时:time.Hour
+	微妙:time.Nanosecond
 	*/
 	if n<0{
 		return
