@@ -87,8 +87,8 @@ func logging(module string,content string,logFile string){
 		return
 	}
 }
-//-----------------------------------------------------------------------
 
+//-----------------------------------------------------------------------
 func print(content interface{}){
 	// function : 简化打印
 	fmt.Println(content)
@@ -156,6 +156,7 @@ func readCSV(path string)[]map[string]interface{}{
 	return tempData
 }
 
+/* ----------------------------时间相关的操作----------------------*/
 func sleep(n int){
 	/*
 	function : 睡眠函数
@@ -174,6 +175,27 @@ func sleep(n int){
 	}
 }
 
+func sleepMin(n int){
+	// function : 睡眠多少分钟
+	// param n : 睡眠的分钟数
+	if n<0{
+		return
+	}
+	for i:=0;i<=n;i++{
+		time.Sleep(time.Minute)
+	}
+}
+
+func sleepHour(h int){
+	// function : 睡眠的小时数
+	if h<0{
+		return
+	}
+	for i:=0;i<h;i++{
+		time.Sleep(time.Hour)
+	}
+}
+
 func nowTime(m string)(string){
 	// function : 返回需要的当前时间字符串
 	// return : 返回需要的时间字符串
@@ -183,6 +205,17 @@ func nowTime(m string)(string){
 	}else{
 		now:=time.Now().Unix()
 		return string(now)
+	}
+}
+
+func integralPoint()(bool){
+	// function : 判断当前时间是否为整点
+	// 如果不为整点则返回false
+	time:=nowTime("day")
+	if strings.Index(time,"00:00:")!=-1{
+		return true
+	}else{
+		return false
 	}
 }
 

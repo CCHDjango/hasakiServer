@@ -10,3 +10,10 @@
 */
 package main
 
+func goldMain(){
+	// 黄金行情的获取入口
+	for {
+
+	}
+}
+

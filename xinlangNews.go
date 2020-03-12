@@ -28,6 +28,12 @@ func xinlanNewsMain(){
 
 func xinlangGlobalLink(){
 	// function : 在新闻滚动页面获取到每个新闻的链接
+	var xlGlobalNewAddress string = "https://news.sina.cn/gj?vt=1&pos=8"
+	xinlangGlobalHTML(xlGlobalNewAddress)
+}
+
+func xinlangGlobalHTML(link string){
+	// function : 通过链接获取新闻滚动的html
 
 }
 
