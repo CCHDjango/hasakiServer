@@ -10,7 +10,7 @@ package main
 
 import "github.com/gin-gonic/gin"
 
-func newsServer(context *gin.Context){
+func govCrollNews(context *gin.Context){
 	// function : 返回数据库全部新闻舆情
 	context.JSON(200,gin.H{
 		"code":200,
@@ -19,16 +19,31 @@ func newsServer(context *gin.Context){
 	})
 }
 
-func quoteServer(context *gin.Context){
+func gateioQuote(context *gin.Context){
 	// function : 返回数据库全部的历史历史行情
+}
+
+func xinlangNews(context *gin.Context){
+	// function : 返回新浪国际新闻滚动列表
+}
+
+func goldQuote(context *gin.Context){
+	// function : 黄金行情数据
+}
+
+func DJI(context *gin.Context){
+	// function : 美国道指数据
 }
 
 func startRestful(){
 	// Engin指针
     router := gin.Default()
 
-	router.GET("/newsServer", newsServer)
-	router.GET("/quoteServer",quoteServer)
+	router.GET("/govCrollNews", govCrollNews)
+	router.GET("/gateioQuote",gateioQuote)
+	router.GET("/goldQuote",goldQuote)
+	router.GET("/xinlangNews",xinlangNews)
+	router.GET("/DJI",DJI)
     // 指定地址和端口号
 	router.Run("0.0.0.0:8888")                    // 如果是云服务改成0.0.0.0:8888
 }

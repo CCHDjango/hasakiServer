@@ -58,6 +58,6 @@ func route(w http.ResponseWriter,r *http.Request){
 }
 
 func websocketMain(){
-	http.HandleFunc("/",route)    // 接收到的信息
-	log.Fatal(http.ListenAndServe("0.0.0.1:8888",nil))   // 监听端口
+	http.HandleFunc("/websocket",route)    // 接收到的信息
+	log.Fatal(http.ListenAndServe("0.0.0.1:9999",nil))   // 监听端口
 }

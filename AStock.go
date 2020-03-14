@@ -13,3 +13,43 @@ vma10(10日均量),vma20(20日均量),turnover换手率(指数没有)
 */
 package main
 
+// 单条行情的数据结构体
+type StockADataStruct struct{
+	Date string
+	Open float32
+	High float32
+	Close float32
+	Low float32
+	Volume float32
+	Chg float32
+	P_chg float32
+	Ma5 float32
+	Ma10 float32
+	Ma20 float32
+	Vma5 float32
+	Vma10 float32
+	Vma20 float32
+	Turnover float32
+}
+// 接口，不一定要实现
+type stockInterface interface{
+	stockAMain()
+	dayCheck()bool
+	stockASave()
+}
+
+func stockAMain(){
+	// function : A股启动入口
+}
+
+func dayCheck()(bool){
+	// function : 判断是否是周末，周末不启动
+	// 工作日是9点半启动，中午11点半休息，1点半到3点再启动
+	// return : 如果是正常开市时间就返回true,否则返回false
+	openMarket:=true
+	return openMarket
+}
+
+func stockASave(){
+	// function : A股数据保存到数据库
+}
