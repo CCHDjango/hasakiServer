@@ -15,6 +15,19 @@ import "path/filepath"
 import "net/http"
 import "bufio"
 
+/*-----------------------------网络请求-----------------------------*/
+func getHTMLResponse(address string)(*http.Response,error){
+	// function : 通过一个网址获取该网页的html对象
+	// param address : 网页链接
+	// return : 一个http的返回对象
+	resp,err:=http.Get(address)
+	if err != nil{
+		fmt.Println("请求获取html失败 :",err)
+	}
+
+	return resp,err
+}
+
 func savePic(url string,savePath string){
 	// function : 保存图片到本地
 	// param savePath : 图片保存路径  xxx/xxx.jpg

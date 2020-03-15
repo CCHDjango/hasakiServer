@@ -4,6 +4,9 @@ hasaki-quant server center的爬虫调度中心
 
 定时轮询爬虫，在该代码中设置定时轮询的时间，方便修改
 在数据中台中设置定时轮询的间隔
+
+用户不知道是否应该要爬取部分网站还是所有网站，也不知道应该多久轮询一次
+爬虫，所以用户不应该感知到自己设置了爬虫
 */
 package main
 
@@ -13,6 +16,11 @@ type Crawl struct{
 type crawlInterface interface{
 	setting(target string,saveMethod string)
 	startGovNewsCroll(saveMethod string,checkTime int)
+	crawlMain()
+}
+
+func (c *Crawl) crawlMain(){
+	// function : 爬虫管理启动入口,在main.go中调用
 }
 
 func (c *Crawl) setting(target string,saveMethod string,checkTime int){

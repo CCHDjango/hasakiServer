@@ -19,6 +19,6 @@ import "sync"
 var go_sync sync.WaitGroup   // 全局线程协程管理
 
 func main(){
-	websocketMain()
+	//websocketMain()
 	go startRestful()
 }
