@@ -17,18 +17,22 @@ package main
 import "time"
 import "fmt"
 import "strings"
+import "gopkg.in/mgo.v2"
 import "github.com/PuerkitoBio/goquery"
 
 var xinlangGlobalNewsTitle string = ""   // 新浪国际新闻新闻标题
 var xinlangGlobalNewsTime string = ""    // 新浪国际新闻文章时间
 var xinlangGlobalNewsContent string = "" // 新浪国际新闻文章内容
+var mgoSession *mgo.Session
 
 func xinlanNewsMain(){
 	// function : 启动新浪国际新闻爬虫
 	// 半个小时更新一次
+	// TODO : 获取数据库的对象
 	for {
 		fmt.Println("爬虫开始")
-		time.Sleep(time.Minute * 30)
+		xinlangGlobalLink()
+		time.Sleep(time.Minute * 10)
 	}
 }
 
@@ -56,6 +60,15 @@ func xinlangGlobalLink(){
 	fmt.Println(linkList)
 	for _,linkValue:=range(linkList){
 		xinlangGlobalHTML(linkValue)
+
+		fmt.Println("获取到新浪国际新闻",xinlangGlobalNewsTitle)
+		// 查重,如果查重发现有重复就进入等待时间
+		sameResult:=xinlangGlobalCheckSame(mgoSession,xinlangGlobalNewsTitle)
+		if sameResult==false{
+			continue
+		}
+		// 把数据保存进数据库
+		//saveAsMongoDB(mgoSession,xinlangGlobalNewsTitle,xinlangGlobalNewsContent,xinlangGlobalNewsTime,xinlangGlobalNewsTime)
 	}
 	
 }
@@ -75,29 +88,37 @@ func xinlangGlobalHTML(link string){
 		content := s.Find("p").Text()
 		time:=nowTime("x")      // TODO : 这里拿的时间应该是包含小时分钟的
 		if len(title)>4 && len(content)>4{
-			fmt.Println(title,"--",content,"++",time,"\n")
+			// 把新闻内容赋值给全局变量
+			xinlangGlobalNewsTitle=title
+			xinlangGlobalNewsTime=time
+			xinlangGlobalNewsContent=content
 		}
 		
 	})
-	// xinlangGlobalCheckSame()
 }
 
-func xinlangGlobalTitle(title string){
-	// function : 处理新闻的标题
-	xinlangGlobalNewsTitle=title
-}
-
-func xinlangGlobalTime(time string){
-	// function : 处理新闻的时间
-	xinlangGlobalNewsTime=time
-}
-
-func xinlangGlobalContent(content string){
-	// function : 处理新闻的简要内容
-	xinlangGlobalNewsContent=content
-}
-
-func xinlangGlobalCheckSame(title string,time string){
+func xinlangGlobalCheckSame(session *mgo.Session,identity string)(bool){
 	// function : 把爬取到的内容和数据库的最近内容
 	// 进行对比，如果有重复那就直接结束该次保存即可
+	// function : 内容查重并检查是否是最后一个新闻，如果是最后一条或者是重复内容消息则终止
+	// param identity : 用于查重的字符串内容或者用时间,为true表示没有重复，为false表示内容已存在
+	type TempStruct struct{
+		Date string `bson:"date"`
+		Content string `bson:"content"`
+		Title string `bson:"title"`
+		Id string `bson:"id"`
+		From int `bson:"from"`
+	}
+	var result []TempStruct
+	err:=session.DB("crawl").C("xinlangGlobal").Find(nil).All(&result)
+	if err!=nil{
+		fmt.Println("数据库查询错误报错")
+		return false
+	}
+	for _,i:=range result{
+		if i.Title==identity{
+			return false
+		}
+	}
+	return true
 }
