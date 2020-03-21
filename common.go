@@ -39,7 +39,11 @@ func savePic(url string,savePath string){
     if err != nil {
         fmt.Println("common function save picture error")
         return
-    }
+	}
+	if strings.Index(res.Status,"200")==-1{
+		fmt.Println("return status code : ",res.Status)
+		return
+	}
     defer res.Body.Close()
     // 获得get请求响应的reader对象
     reader := bufio.NewReaderSize(res.Body, 64 * 1024)
