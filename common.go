@@ -41,7 +41,7 @@ func savePic(url string,savePath string){
         return
 	}
 	if strings.Index(res.Status,"200")==-1{
-		fmt.Println("return status code : ",res.Status)
+		fmt.Println("save pictrue function return status code : ",res.Status)
 		return
 	}
     defer res.Body.Close()
@@ -118,7 +118,14 @@ func printError(content error){
 
 func printLocal(content string){
 	// function : 写入日志到本地txt文件，日志文件的路径默认在执行文件的同一目录
-	
+	dir:=exePath()
+	if len(dir)<2{
+		return
+	}
+	err:=mkdir(dir+"/log")
+	if err!=nil{
+		fmt.Println(err)
+	}
 }
 
 func dateJudge(firstDate string,lastDate string)(bool){
@@ -135,6 +142,7 @@ func dateJudge(firstDate string,lastDate string)(bool){
 	}
 }
 
+/*----------------------------------文件操作--------------------------------*/
 func readJson(path string)([]map[string]interface{}){
 	/*
 	function : 读取json文件并转换成[]map类型
@@ -167,10 +175,17 @@ func writeJson(path string,mapData interface{}){
 }
 
 func readCSV(path string)[]map[string]interface{}{
-	// function : 从本地加载CSV文件，并返回到上层
+	// function : 从本地加载CSV文件，并返回到上层,读取csv
 	// param path : CSV文件路径
 	var tempData []map[string]interface{}
 	return tempData
+}
+
+func mkdir(filePath string)error{
+	// function : 创建文件夹
+	// param filePath : 文件夹路径
+	err:=os.Mkdir(filePath,os.ModePerm)
+	return err
 }
 
 /* ----------------------------时间相关的操作----------------------*/
@@ -236,6 +251,7 @@ func integralPoint()(bool){
 	}
 }
 
+/*--------------------------------类型转换-------------------------------*/
 func strJoin(first string,last string,mid string)(string){
 	/*
 	function : 拼接合成字符串
